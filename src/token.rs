@@ -1,5 +1,6 @@
 /// This enumeration describes all possible token types in Rose
-pub(crate) enum Token {
+#[derive(Debug)]
+pub enum Token {
     ILLEGAL,       // an illegal token
     EOF,           // end of file
     IDENT(String), // an identifier, like `my_var`
@@ -24,7 +25,7 @@ pub(crate) enum Token {
 
 /// Determine if a multi-character keyword is a function or let, and if not, assign it as an
 /// identifier.
-fn lookup_keyword(ident: &str) -> Token {
+pub fn lookup_keyword(ident: &str) -> Token {
     match ident {
         "fn" => Token::FUNCTION,
         "let" => Token::LET,

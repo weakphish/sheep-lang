@@ -1,16 +1,6 @@
-# TODO
-- [ ] Implement a lexer that can take input and produce a list of tokens
-
-# What  
-- A python-like scripting language with a more strict syntax (braces, semicolons) and a focus on dynamicism while retaining syntactic elements of compiled languages of the C family  
-- Functions as first class entities  
-- Anonymous functions  
-- Interfaces, structs, extensions to built in types  
-- Code Example:  
-```
 def maybe_divide(num: int, denom: int) -> int? { // a question mark signifies an Option type, which is similar to Rust's. It's just shorthand for Option<int> in this case.
   if denom == 0 {
-      none;
+      return none;
   } else {
       num / denom;
   }
@@ -49,4 +39,3 @@ def main() {
       break;
   }
 }
-```
