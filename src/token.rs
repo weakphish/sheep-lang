@@ -5,6 +5,8 @@ pub enum Token {
     COMMENT,
     IDENT(String),
     INT(i32),
+
+    // math
     PLUS,
     MINUS,
     ASTERISK,
@@ -13,6 +15,8 @@ pub enum Token {
     QUESTION,
     GT,
     LT,
+
+    // symbols
     COMMA,
     SEMICOLON,
     LPAREN,
@@ -21,16 +25,24 @@ pub enum Token {
     RBRACE,
     EQ,
     NEQ,
-    // Pipe = |>
     PIPE,
     LET,
     VAR,
     ASSIGN,
+    PRINT,
     IF,
     ELSE,
     RETURN,
+
+    // logical
     LOR,
     LAND,
+
+    // binary
+    BOR,
+    BAND,
+
+    // boolean
     TRUE,
     FALSE,
 }
@@ -42,6 +54,7 @@ pub fn match_keyword(word: &str) -> Token {
         "let" => Token::LET,
         "if" => Token::IF,
         "else" => Token::ELSE,
+        "print" => Token::PRINT,
         _ => Token::IDENT(word.to_string()),
     }
 }
