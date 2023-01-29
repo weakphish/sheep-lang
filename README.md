@@ -8,6 +8,13 @@
 - Functions as first class entities  
 - Anonymous functions  
 - Interfaces, structs, extensions to built in types  
+- Everything is an expression?!
+- Byte code VM with registers and stack
+- Start with regular interpreter, then build compiler
+- Defer keyword
+- Only one composite data type like Lua - a dictionary type that can be used as a list (integer as key)
+- Need an implementation of dictionaries that are constant time lookup for integers
+puts as a statement, printf as a function
 - Code Example:  
 
 ```

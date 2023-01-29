@@ -23,7 +23,6 @@ pub enum Token {
     NEQ,
     // Pipe = |>
     PIPE,
-    FUNC,
     LET,
     VAR,
     ASSIGN,
@@ -40,7 +39,6 @@ pub enum Token {
 pub fn match_keyword(word: &str) -> Token {
     match word {
         "|>" => Token::PIPE,
-        "func" => Token::FUNC,
         "let" => Token::LET,
         "if" => Token::IF,
         "else" => Token::ELSE,
