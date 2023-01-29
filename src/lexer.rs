@@ -1,4 +1,4 @@
-use crate::token::Token;
+use crate::token::{match_keyword, Token};
 
 /// A lexer contains a vector of characters as well as various pointers to read and peek characters
 /// in the input.
@@ -75,15 +75,32 @@ impl Lexer {
                     Token::ASSIGN
                 }
             }
-            _ => todo!(),
+            _ => {
+                if self.ch.is_alphabetic() {
+                    let mut lit = String::from(self.read_char());
+                    while self.input.get(self.position)?.is_alphabetic() {
+                        lit.push(self.read_char());
+                    }
+                    match_keyword(lit.as_str())
+                } else if self.ch.is_digit(10) {
+                    let mut lit = String::from(self.read_char());
+                    while self.input.get(self.position)?.is_digit(10) {
+                        lit.push(self.read_char());
+                    }
+                    Token::INT(lit.parse::<i32>().unwrap()) // FIXME better error handling
+                } else {
+                    Token::ILLEGAL(self.ch.to_string())
+                }
+            }
         };
         self.read_char();
         Some(tok)
     }
 
-    fn read_char(&mut self) {
+    fn read_char(&mut self) -> char {
         self.ch = *self.input.get(self.peek_position).unwrap_or(&'\0'); // FIXME
         self.position = self.peek_position;
+        self.ch
     }
 
     fn peek_char(&self) -> Option<char> {
@@ -101,7 +118,28 @@ impl Lexer {
 
     fn skip_whitespace(&mut self) {
         while self.ch == ' ' || self.ch == '\t' || self.ch == '\n' || self.ch == '\r' {
-            self.read_char()
+            self.read_char();
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_lexer() {
+        // TODO
+        let input: String = "def main() {\nprint \"hello\" // print is a primitive statement, standard // to denote comment".to_owned();
+        let expected: Vec<Token> = vec![
+            Token::DEF,
+            Token::IDENT("main".to_owned()),
+            Token::LPAREN,
+            Token::RPAREN,
+            Token::LBRACE,
+            Token::PRINT,
+        ];
+        let lexer = self::Lexer::new(input);
     }
 }
