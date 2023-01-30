@@ -1,9 +1,11 @@
+#[derive(PartialEq)]
 pub enum Token {
     // Illegal token will store whatever it is that it found
     ILLEGAL(String),
     EOF,
     COMMENT,
     IDENT(String),
+    STRING(String),
     INT(i32),
 
     // math
@@ -29,7 +31,7 @@ pub enum Token {
     LET,
     VAR,
     ASSIGN,
-    PRINT,
+    PUTSTR,
     IF,
     ELSE,
     RETURN,
@@ -54,7 +56,7 @@ pub fn match_keyword(word: &str) -> Token {
         "let" => Token::LET,
         "if" => Token::IF,
         "else" => Token::ELSE,
-        "print" => Token::PRINT,
+        "putstr" => Token::PUTSTR,
         _ => Token::IDENT(word.to_string()),
     }
 }

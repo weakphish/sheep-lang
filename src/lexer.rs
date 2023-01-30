@@ -11,11 +11,13 @@ pub struct Lexer {
 
 impl Lexer {
     pub fn new(input: String) -> Self {
+        let in_vec: Vec<char> = input.chars().collect();
+        let c = in_vec[0];
         Self {
-            input: input.chars().collect(),
+            input: in_vec,
             position: 0,
             peek_position: 1,
-            ch: '0',
+            ch: c,
         }
     }
 
@@ -67,14 +69,18 @@ impl Lexer {
                     Token::SLASH
                 }
             }
-            '=' => {
-                if self.peek_char()? == '=' {
-                    self.read_char(); // advance past second '=' sign
-                    Token::EQ
-                } else {
-                    Token::ASSIGN
+            '"' => {
+                while self.peek_char()? != '"' {
+                    self.peek_position += 1;
                 }
+                self.position = self.peek_position; // catch current pos up to the peek
+                Token::STRING(
+                    self.input[self.position..self.peek_position]
+                        .into_iter()
+                        .collect(),
+                )
             }
+
             _ => {
                 if self.ch.is_alphabetic() {
                     let mut lit = String::from(self.read_char());
@@ -98,8 +104,8 @@ impl Lexer {
     }
 
     fn read_char(&mut self) -> char {
-        self.ch = *self.input.get(self.peek_position).unwrap_or(&'\0'); // FIXME
-        self.position = self.peek_position;
+        self.ch = *self.input.get(self.position).unwrap_or(&'\0'); // FIXME
+        self.position += 1;
         self.ch
     }
 
@@ -131,15 +137,26 @@ mod tests {
     #[test]
     fn test_lexer() {
         // TODO
-        let input: String = "def main() {\nprint \"hello\" // print is a primitive statement, standard // to denote comment".to_owned();
+        let input: String = "let main() = {\nputs\"hello\" // print is a primitive statement, standard // to denote comment".to_owned();
         let expected: Vec<Token> = vec![
-            Token::DEF,
+            Token::LET,
             Token::IDENT("main".to_owned()),
+            Token::ASSIGN,
             Token::LPAREN,
             Token::RPAREN,
             Token::LBRACE,
-            Token::PRINT,
+            Token::PUTSTR,
+            Token::STRING(
+                "print is a primitive statement, standard // to denote comment".to_owned(),
+            ),
         ];
-        let lexer = self::Lexer::new(input);
+        let mut lexer = self::Lexer::new(input);
+
+        let mut got: Vec<Token> = vec![];
+        while let Some(t) = lexer.next_token() {
+            got.push(t);
+        }
+
+        assert!(got == expected);
     }
 }
