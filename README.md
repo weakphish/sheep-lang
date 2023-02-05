@@ -18,6 +18,7 @@ puts as a statement, printf as a function
 - Code Example:  
 
 ```
+// define functions the same way as variables, except with parentheses to denote arguments
 let maybe_divide(num: int, denom: int) -> int? = { // a question mark signifies an Option type, which is similar to Rust's. It's just shorthand for Option<int> in this case.
   if denom == 0 {
       none;
@@ -34,18 +35,21 @@ let say_hello(name: str) -> none = {
   print "Hello, {name}!";
 }
 
+let jack = :Jack // a symbol, much like Ruby, is an immutable identifier to represent unique values
+
 let main() = {
-  print "hello" // print is a primitive statement, standard // to denote comment
+  val hello = "hello"
+  print hello // print is a primitive statement, standard // to denote comment
   
   // Variables
-  name: str = "jack"; // optional type annotations
+  let name: str = "jack"; // optional type annotations
   print name; // this should work
-  num = 42; // will default to int if possible
+  let num = 42; // will default to int if possible
   print num; // this also works
   print "I like the number {num}"; // interpolation
  
   // Arithmetic
-  var result = num + 10; // 14
+  let result = num + 10; // 14
  
   // Loops
   for i in 1..10 {
