@@ -1,12 +1,12 @@
-#[derive(PartialEq)]
-pub enum Token {
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub enum Token<'a> {
     // Illegal token will store whatever it is that it found
-    ILLEGAL(String),
+    ILLEGAL(&'a str),
     EOF,
     COMMENT,
-    IDENT(String),
-    STRING(String),
-    INT(i32),
+    IDENT(&'a str),
+    STRING(&'a str),
+    INT(&'a str),
 
     // math
     PLUS,
@@ -21,6 +21,7 @@ pub enum Token {
     // symbols
     COMMA,
     SEMICOLON,
+    COLON,
     LPAREN,
     RPAREN,
     LBRACE,
@@ -49,6 +50,7 @@ pub enum Token {
     FALSE,
 }
 
+/// FIXME optimize me ;)
 /// Match a string keyword to a token type. Defaults to IDENT if nothing matches.
 pub fn match_keyword(word: &str) -> Token {
     match word {
@@ -57,6 +59,6 @@ pub fn match_keyword(word: &str) -> Token {
         "if" => Token::IF,
         "else" => Token::ELSE,
         "putstr" => Token::PUTSTR,
-        _ => Token::IDENT(word.to_string()),
+        _ => Token::IDENT(word),
     }
 }
