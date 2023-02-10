@@ -1,34 +1,55 @@
-use std::str::Chars;
+use crate::token::Token;
 
-use crate::token::{match_keyword, Token};
-
-pub fn lex_input(input: &str) {
-    let mut peek = 0;
-
+pub fn lex_input(input: &str) -> Vec<Token> {
     let chars = input.chars();
-    let tokens: Vec<Token> = vec![];
+    let mut tokens: Vec<Token> = vec![];
+
+    dbg!(&input);
+    dbg!(&chars);
 
     // start lexing from beginning of chars iterator
-    for (i, c) in chars.enumerate() {
-        match c {
-            // is it a number? oooh who knows!!!
-            c if c.is_digit(10) => tokens.push(Token::INT(lex_number(input, i).unwrap())), // FIXME better error handling
-            _ => todo!(),
+    let mut pos = 0;
+    for c in chars {
+        // check for int
+        if c.is_ascii_digit() {
+            dbg!("in digit");
+            let (tok, jump) = lex_number(input, pos);
+
+            dbg!(&tok);
+            dbg!(&jump);
+
+            pos = pos + jump;
+            tokens.push(tok);
+
+            dbg!(pos);
+        } else if c.is_alphabetic() {
+            dbg!("in alphabetic");
+        } else {
+            dbg!("BREAKING!");
+            break; // TODO
         }
+        pos += 1;
     }
 
     todo!();
 }
 
-fn lex_number(input: &str, offset: usize) -> Option<&str> {
-    let mut peek = offset;
-    while input.get(peek)?.is_digit() {
-        peek += 1;
+/// Find the largest sequence of digits starting at offset and return it as a
+/// Token::INT(&str) as well as the amount jumped from the original offset.
+#[inline]
+fn lex_number(input: &str, offset: usize) -> (Token, usize) {
+    dbg!("lexing number");
+
+    let mut peek = offset + 1;
+    while let Some(i) = input.as_bytes().get(peek) {
+        let c = *i as char;
+        if (c).is_ascii_digit() {
+            peek += 1
+        } else {
+            break;
+        }
     }
-
-    Some(&input[offset..peek]);
-
-    todo!();
+    (Token::INT(&input[offset..peek]), (peek - offset))
 }
 
 #[cfg(test)]
@@ -37,18 +58,34 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_lexer() {
-        // TODO
-        let input = "let main() = {\nputs\"hello\" // print is a primitive statement, standard // to denote comment";
-        let expected: Vec<Token> = vec![
+    fn test_lex_input() {
+        let input = "let main() = {puts 12345;}";
+
+        let expected = vec![
             Token::LET,
             Token::IDENT("main"),
-            Token::ASSIGN,
             Token::LPAREN,
             Token::RPAREN,
+            Token::ASSIGN,
             Token::LBRACE,
             Token::PUTSTR,
-            Token::STRING("print is a primitive statement, standard // to denote comment"),
+            Token::INT("12345"),
+            Token::SEMICOLON,
+            Token::RBRACE,
         ];
+
+        let result = lex_input(input);
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_lex_number() {
+        // TODO
+        let input = "12345";
+
+        let result = lex_number(input, 0);
+
+        assert_eq!(result, Token::INT(input));
     }
 }
