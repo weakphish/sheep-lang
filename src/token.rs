@@ -1,64 +1,64 @@
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Token<'a> {
     // Illegal token will store whatever it is that it found
-    ILLEGAL(&'a str),
+    Illegal(&'a str),
     EOF,
-    COMMENT,
-    IDENT(&'a str),
-    STRING(&'a str),
-    INT(&'a str),
+    Comment,
+    Ident(&'a str),
+    String(&'a str),
+    Int(&'a str),
 
     // math
-    PLUS,
-    MINUS,
-    ASTERISK,
-    SLASH,
-    BANG,
-    QUESTION,
+    Plus,
+    Minus,
+    Asterisk,
+    Slash,
+    Bang,
+    Question,
     GT,
     LT,
 
     // symbols
-    COMMA,
-    SEMICOLON,
-    COLON,
-    LPAREN,
-    RPAREN,
-    LBRACE,
-    RBRACE,
+    Comma,
+    Semicolon,
+    Colon,
+    LParen,
+    RParen,
+    LBrace,
+    RBrace,
     EQ,
     NEQ,
-    PIPE,
-    LET,
-    VAR,
-    ASSIGN,
-    PUTSTR,
-    IF,
-    ELSE,
-    RETURN,
+    Pipe,
+    Let,
+    Var,
+    Assign,
+    Puts,
+    If,
+    Else,
+    Return,
 
     // logical
-    LOR,
-    LAND,
+    LOr,
+    LAnd,
 
     // binary
-    BOR,
-    BAND,
+    BOr,
+    BAnd,
 
     // boolean
-    TRUE,
-    FALSE,
+    True,
+    False,
 }
 
 /// FIXME optimize me ;)
 /// Match a string keyword to a token type. Defaults to IDENT if nothing matches.
 pub fn match_keyword(word: &str) -> Token {
     match word {
-        "|>" => Token::PIPE,
-        "let" => Token::LET,
-        "if" => Token::IF,
-        "else" => Token::ELSE,
-        "putstr" => Token::PUTSTR,
-        _ => Token::IDENT(word),
+        "|>" => Token::Pipe,
+        "let" => Token::Let,
+        "if" => Token::If,
+        "else" => Token::Else,
+        "putstr" => Token::Puts,
+        _ => Token::Ident(word),
     }
 }

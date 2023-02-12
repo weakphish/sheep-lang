@@ -1,55 +1,47 @@
+use std::{iter::Peekable, str::CharIndices};
+
 use crate::token::Token;
 
 pub fn lex_input(input: &str) -> Vec<Token> {
-    let chars = input.chars();
+    // let chars = input.chars();
+    let mut chars = input.char_indices().peekable();
     let mut tokens: Vec<Token> = vec![];
 
-    dbg!(&input);
-    dbg!(&chars);
-
     // start lexing from beginning of chars iterator
-    let mut pos = 0;
-    for c in chars {
+    &mut chars.for_each(|c| {
         // check for int
-        if c.is_ascii_digit() {
-            dbg!("in digit");
-            let (tok, jump) = lex_number(input, pos);
-
-            dbg!(&tok);
-            dbg!(&jump);
-
-            pos = pos + jump;
-            tokens.push(tok);
-
-            dbg!(pos);
-        } else if c.is_alphabetic() {
-            dbg!("in alphabetic");
-        } else {
-            dbg!("BREAKING!");
-            break; // TODO
+        if c.1.is_ascii_digit() {
+            let tok = lex_number(&mut chars);
         }
-        pos += 1;
-    }
+    });
 
-    todo!();
+    tokens
 }
 
 /// Find the largest sequence of digits starting at offset and return it as a
 /// Token::INT(&str) as well as the amount jumped from the original offset.
 #[inline]
-fn lex_number(input: &str, offset: usize) -> (Token, usize) {
-    dbg!("lexing number");
+fn lex_number<'a>(input: &'a mut Peekable<CharIndices<'a>>) -> Token<'a> {
+    /*
+    With this, you can have lex_number take an argument of type &mut CharIndices,
+    modify it, and just return a Token — and the modifications to the iterator
+    in this function will also advance the iterator in lex_input, too.
 
-    let mut peek = offset + 1;
-    while let Some(i) = input.as_bytes().get(peek) {
-        let c = *i as char;
-        if (c).is_ascii_digit() {
-            peek += 1
-        } else {
-            break;
-        }
+    There's just one problem: in lex_number, we need to think about the case
+    where the next character isn't a number. If it is a number, then we advance
+    the iterator, and everything's fine; if it's not, then we return the string
+    slice as a token, but we've then used up a character! We need to find some
+    way of putting the character "back" in the iterator once we've seen it's not
+    a digit. To do this, I would use .peekable() on the iterator, which lets you
+    examine the character before opting to advance the iterator if it's the
+    character we want.
+    */
+    let mut number: String = "".into();
+    while input.peek().unwrap_or(&(0, '\0')).1.is_alphabetic() {
+        // FIXME unwrap_or?
+        number.push(input.next().unwrap().1); // FIXME replace unwrap
     }
-    (Token::INT(&input[offset..peek]), (peek - offset))
+    Token::Int(&number)
 }
 
 #[cfg(test)]
@@ -62,16 +54,16 @@ mod tests {
         let input = "let main() = {puts 12345;}";
 
         let expected = vec![
-            Token::LET,
-            Token::IDENT("main"),
-            Token::LPAREN,
-            Token::RPAREN,
-            Token::ASSIGN,
-            Token::LBRACE,
-            Token::PUTSTR,
-            Token::INT("12345"),
-            Token::SEMICOLON,
-            Token::RBRACE,
+            Token::Let,
+            Token::Ident("main"),
+            Token::LParen,
+            Token::RParen,
+            Token::Assign,
+            Token::LBrace,
+            Token::Puts,
+            Token::Int("12345"),
+            Token::Semicolon,
+            Token::RBrace,
         ];
 
         let result = lex_input(input);
@@ -86,6 +78,6 @@ mod tests {
 
         let result = lex_number(input, 0);
 
-        assert_eq!(result, Token::INT(input));
+        assert_eq!(result, Token::Int(input));
     }
 }
